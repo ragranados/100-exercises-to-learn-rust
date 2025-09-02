@@ -8,3 +8,39 @@
 //   It should be possible to print its debug representation.
 //
 // Tests are located in the `tests` folder—pay attention to the visibility of your types and methods.
+
+#[derive(Debug)]
+pub struct SaturatingU16 {
+    pub value: u16,
+}
+
+impl SaturatingU16 {
+    pub fn new(value: u16) -> SaturatingU16 {
+        SaturatingU16 { value }
+    }
+}
+
+impl Into<SaturatingU16> for u16 {
+    fn into(self) -> SaturatingU16 {
+        SaturatingU16::new(self)
+    }
+}
+
+impl Into<SaturatingU16> for u8 {
+    fn into(self) -> SaturatingU16 {
+        SaturatingU16::new(self.into())
+    }
+}
+
+impl Into<SaturatingU16> for &u16 {
+    fn into(self) -> SaturatingU16 {
+        SaturatingU16::new(*self)
+    }
+}
+
+impl Into<SaturatingU16> for &u8 {
+    fn into(self) -> SaturatingU16 {
+        let converted = *self;
+        SaturatingU16::new(converted.into())
+    }
+}
