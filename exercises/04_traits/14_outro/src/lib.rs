@@ -9,9 +9,23 @@
 //
 // Tests are located in the `tests` folder—pay attention to the visibility of your types and methods.
 
-#[derive(Debug)]
+use std::ops::Add;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct SaturatingU16 {
     pub value: u16,
+}
+
+impl PartialEq<u16> for SaturatingU16 {
+    fn eq(&self, other: &u16) -> bool {
+        self.value == *other
+    }
+}
+
+impl From<u16> for SaturatingU16 {
+    fn from(value: u16) -> Self {
+        SaturatingU16::new(value)
+    }
 }
 
 impl SaturatingU16 {
@@ -20,11 +34,11 @@ impl SaturatingU16 {
     }
 }
 
-impl Into<SaturatingU16> for u16 {
-    fn into(self) -> SaturatingU16 {
-        SaturatingU16::new(self)
-    }
-}
+// impl Into<SaturatingU16> for u16 {
+//     fn into(self) -> SaturatingU16 {
+//         SaturatingU16::new(self)
+//     }
+// }
 
 impl Into<SaturatingU16> for u8 {
     fn into(self) -> SaturatingU16 {
@@ -42,5 +56,55 @@ impl Into<SaturatingU16> for &u8 {
     fn into(self) -> SaturatingU16 {
         let converted = *self;
         SaturatingU16::new(converted.into())
+    }
+}
+
+impl Add<&SaturatingU16> for SaturatingU16 {
+    type Output = SaturatingU16;
+
+    fn add(self, rhs: &SaturatingU16) -> Self::Output {
+        SaturatingU16::new(self.value.saturating_add((*rhs).value))
+    }
+}
+
+impl Add for SaturatingU16 {
+    type Output = SaturatingU16;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        SaturatingU16::new(self.value.saturating_add(rhs.value))
+    }
+}
+
+impl Add<u16> for SaturatingU16 {
+    type Output = SaturatingU16;
+
+    fn add(self, rhs: u16) -> Self::Output {
+        SaturatingU16::new(self.value.saturating_add(rhs))
+    }
+}
+
+impl Add<&u16> for SaturatingU16 {
+    type Output = SaturatingU16;
+
+    fn add(self, rhs: &u16) -> Self::Output {
+        SaturatingU16::new(self.value.saturating_add(*rhs))
+    }
+}
+
+impl Add<u8> for SaturatingU16 {
+    type Output = SaturatingU16;
+
+    fn add(self, rhs: u8) -> Self::Output {
+        let left: u16 = rhs.into();
+        SaturatingU16::new(self.value + left)
+    }
+}
+
+impl Add<&u8> for SaturatingU16 {
+    type Output = SaturatingU16;
+
+    fn add(self, rhs: &u8) -> Self::Output {
+        let left: u16 = (*rhs).into();
+        SaturatingU16::new(self.value + left)
     }
 }
