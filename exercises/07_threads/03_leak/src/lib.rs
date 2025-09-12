@@ -6,7 +6,19 @@
 use std::thread;
 
 pub fn sum(v: Vec<i32>) -> i32 {
-    todo!()
+    let new_v = Box::new(v);
+    let leaked: &mut Vec<i32> = Box::leak(new_v);
+
+    let first_thread: thread::JoinHandle<i32> =
+        thread::spawn(|| leaked.as_slice()[0..leaked.len() / 2].iter().sum());
+
+    let second_thread: thread::JoinHandle<i32> = thread::spawn(|| {
+        leaked.as_slice()[leaked.len() / 2..leaked.len()]
+            .iter()
+            .sum()
+    });
+
+    first_thread.join().unwrap() + second_thread.join().unwrap()
 }
 
 #[cfg(test)]
